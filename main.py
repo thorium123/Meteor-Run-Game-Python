@@ -30,9 +30,9 @@ fall_speed = 5
 
 ### Load music
 
-my_dir = os.path.dirname(os.path.realpath(__file__))
+mydir = os.path.dirname(os.path.realpath(__file__))
 
-mixer.music.load(fr'{my_dir}/Music/tune_1.mp3')
+mixer.music.load(fr'{mydir}/Music/tune_1.mp3')
 mixer.music.set_volume(0.03)
 mixer.music.play(loops=-1)
 
@@ -41,30 +41,30 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Meteor Run")
 
 # Load and scale images
-BACKGROUND_IMG = pygame.image.load(fr"Images/Background.png") # noqa: F541
+BACKGROUND_IMG = pygame.image.load(fr"{mydir}/Images/Background.png") # noqa: F541
 BACKGROUND_IMG = pygame.transform.scale(BACKGROUND_IMG, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-BACKGROUND_IMG_GAME_OVER = pygame.image.load(fr"Images/Cheese.png") # noqa: F541
+BACKGROUND_IMG_GAME_OVER = pygame.image.load(fr"{mydir}/Images/Cheese.png") # noqa: F541
 BACKGROUND_IMG_GAME_OVER = pygame.transform.scale(BACKGROUND_IMG, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-player_image_left = pygame.image.load(fr'Images/Player.Left.png')  # noqa: F541
+player_image_left = pygame.image.load(fr'{mydir}/Images/Player.Left.png')  # noqa: F541
 player_image_left = pygame.transform.scale(player_image_left, (player_width, player_height))
 
-player_image_right = pygame.image.load(fr'Images/Player.Right.png')  # noqa: F541
+player_image_right = pygame.image.load(fr'{mydir}/Images/Player.Right.png')  # noqa: F541
 player_image_right = pygame.transform.scale(player_image_right, (player_width, player_height))
 
-player_image_default = pygame.image.load(fr'Images/Player.png')  # noqa: F541
+player_image_default = pygame.image.load(fr'{mydir}/Images/Player.png')  # noqa: F541
 player_image_default = pygame.transform.scale(player_image_default, (player_width, player_height))
 
 player_image = player_image_default  # Default image
 
-meteor_image = pygame.image.load(fr'Images/Meteor.png') # noqa: F541
+meteor_image = pygame.image.load(fr'{mydir}/Images/Meteor.png') # noqa: F541
 meteor_image = pygame.transform.scale(meteor_image, (object_width, object_height))
 
-cheese_image = pygame.image.load(fr'Images/Cheese.png') # noqa: F541
+cheese_image = pygame.image.load(fr'{mydir}/Images/Cheese.png') # noqa: F541
 cheese_image = pygame.transform.scale(cheese_image, (object_width, object_height))
 
-b_imgs = [pygame.image.load(fr'Images/Bullet-Red.png'), pygame.image.load(fr'Image/Bullet-Green.png')]  # noqa: F541
+b_imgs = [pygame.image.load(fr'{mydir}/Images/Bullet-Red.png'), pygame.image.load(fr'{mydir}/Image/Bullet-Green.png')]  # noqa: F541
 
 bullet_image = random.choice(b_imgs)
 bullet_image = pygame.transform.scale(bullet_image, (20, 30))
