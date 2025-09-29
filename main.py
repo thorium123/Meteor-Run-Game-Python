@@ -64,7 +64,7 @@ meteor_image = pygame.transform.scale(meteor_image, (object_width, object_height
 cheese_image = pygame.image.load(fr'{mydir}/Images/Cheese.png') # noqa: F541
 cheese_image = pygame.transform.scale(cheese_image, (object_width, object_height))
 
-b_imgs = [pygame.image.load(fr'{mydir}/Images/Bullet-Red.png'), pygame.image.load(fr'{mydir}/Image/Bullet-Green.png')]  # noqa: F541
+b_imgs = [pygame.image.load(fr'{mydir}/Images/Bullet-Red.png'), pygame.image.load(fr'{mydir}/Images/Bullet-Green.png')]  # noqa: F541
 
 bullet_image = random.choice(b_imgs)
 bullet_image = pygame.transform.scale(bullet_image, (20, 30))
