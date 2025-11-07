@@ -1,1 +1,4 @@
+# Here are the needed dependancies for Meteor Run
 
+python 3 - a programming language - https://python.org/downloads/
+pygame - a python package - https://github.com/pygame/pygame 
