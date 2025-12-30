@@ -12,8 +12,8 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 # Screen dimensions
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 800
+SCREEN_WIDTH = screen.get_width()
+SCREEN_HEIGHT = screen.get_height()
 
 # Player settings
 player_width = 100
