@@ -11,6 +11,10 @@ mixer.init()
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
+# Screen dimensions
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 800
+
 # Player settings
 player_width = 100
 player_height = 100
