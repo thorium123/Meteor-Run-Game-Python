@@ -7,10 +7,6 @@ import os
 pygame.init()
 mixer.init()
 
-# Screen dimensions
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 800
-
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -37,7 +33,7 @@ mixer.music.set_volume(0.03)
 mixer.music.play(loops=-1)
 
 # Create the screen
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 pygame.display.set_caption("Meteor Run")
 
 # Load and scale images
