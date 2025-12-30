@@ -11,18 +11,6 @@ mixer.init()
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-# Screen dimensions
-SCREEN_WIDTH = screen.get_width()
-SCREEN_HEIGHT = screen.get_height()
-
-# Player settings
-player_width = 100
-player_height = 100
-player_speed = 5
-jump_height = 15
-gravity = 1
-ground_level = SCREEN_HEIGHT - player_height
-
 # Meteor Settings
 object_width = 50
 object_height = 50
@@ -39,6 +27,18 @@ mixer.music.play(loops=-1)
 # Create the screen
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 pygame.display.set_caption("Meteor Run")
+
+# Screen dimensions
+SCREEN_WIDTH = screen.get_width()
+SCREEN_HEIGHT = screen.get_height()
+
+# Player settings
+player_width = 100
+player_height = 100
+player_speed = 5
+jump_height = 15
+gravity = 1
+ground_level = SCREEN_HEIGHT - player_height
 
 # Load and scale images
 BACKGROUND_IMG = pygame.image.load(fr"{mydir}/Images/Background.png") # noqa: F541
