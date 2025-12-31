@@ -28,7 +28,7 @@ mixer.music.play(loops=-1)
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
 
-flags = pygame.RESIZABLE | pygame.SCALE
+flags = pygame.RESIZABLE | pygame.SCALED
 
 # Create the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags)
