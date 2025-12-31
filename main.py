@@ -24,13 +24,15 @@ mixer.music.load(fr'{mydir}/Music/tune_1.mp3')
 mixer.music.set_volume(0.03)
 mixer.music.play(loops=-1)
 
-# Create the screen
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-pygame.display.set_caption("Meteor Run")
+# Screen dimensions and flags
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 800
 
-# Screen dimensions
-SCREEN_WIDTH = screen.get_width()
-SCREEN_HEIGHT = screen.get_height()
+flags = pygame.RESIZABLE | pygame.SCALE
+
+# Create the screen
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags)
+pygame.display.set_caption("Meteor Run")
 
 # Player settings
 player_width = 100
