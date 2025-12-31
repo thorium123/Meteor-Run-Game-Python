@@ -239,8 +239,8 @@ while run:
                 player.lives -= 2
                 meteor.reset()
 
-            # Update lives
-            draw_lives_in_words(screen, player.lives)
+                # Update lives
+                draw_lives_in_words(screen, player.lives)
 
     # Check for game over
     if player.lives <= 0:
