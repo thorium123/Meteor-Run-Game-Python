@@ -239,6 +239,9 @@ while run:
                 player.lives -= 2
                 meteor.reset()
 
+            # Update lives
+            draw_lives_in_words(screen, player.lives)
+
     # Check for game over
     if player.lives <= 0:
         run = False
@@ -247,9 +250,8 @@ while run:
     # Update all sprites
     all_sprites.update()
         
-    # Draw background and lives
+    # Draw background
     BG()
-    draw_lives_in_words(screen, player.lives)
         
     pygame.display.flip()
     clock.tick(60)
