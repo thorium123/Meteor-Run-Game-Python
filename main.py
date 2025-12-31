@@ -203,6 +203,9 @@ all_sprites.add(meteors)
 
 run = True
 
+# Initialise lives
+draw_lives_in_words(screen, player.lives)
+
 while run:
     bullet_image = random.choice(b_imgs)
     bullet_image = pygame.transform.scale(bullet_image, (20, 30))
@@ -235,7 +238,7 @@ while run:
                 player.lives = min(player.lives + 1, 10)
                 meteor.reset()
             else:
-                # Lose one life if player collides with a meteor
+                # Lose two lifes if player collides with a meteor
                 player.lives -= 2
                 meteor.reset()
 
