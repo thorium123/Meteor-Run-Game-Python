@@ -222,8 +222,9 @@ while run:
             if event.key == pygame.K_s or event.key == pygame.K_DOWN:
                 bullet = Bullet(player.rect.centerx, player.rect.top)
                 all_sprites.add(bullet)
-                bullets.add(bullet)   
-
+                bullets.add(bullet)
+            if event.key == pygame.K_q:
+                run = False
     # 2. Logic Updates
     scrolling_bg.update()  # Update background position
     all_sprites.update()   # Update player/meteors
