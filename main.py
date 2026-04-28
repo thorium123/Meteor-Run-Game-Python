@@ -52,7 +52,7 @@ ground_level = SCREEN_HEIGHT - player_height
 player_image_left = pygame.image.load(fr'{mydir}/Images/Player-Left.png') 
 player_image_left = pygame.transform.scale(player_image_left, (player_width, player_height))
 
-player_image_right = pygame.image.load(fr'{mydir}/Images/player-Right.png') 
+player_image_right = pygame.image.load(fr'{mydir}/Images/Player-Right.png') 
 player_image_right = pygame.transform.scale(player_image_right, (player_width, player_height))
 
 player_image_default = pygame.image.load(fr'{mydir}/Images/Player.png') 
@@ -70,6 +70,9 @@ b_imgs = [pygame.image.load(fr'{mydir}/Images/Bullet-Red.png'), pygame.image.loa
 
 bullet_image = random.choice(b_imgs)
 bullet_image = pygame.transform.scale(bullet_image, (20, 30))
+
+gem_1_image = pygame.image.load(fr'{mydir}/Images/Gem-1.png')
+gem_1_image = pygame.transform.scale(gem_1_image, (object_width, object_height))
 
 # --- NEW SCROLLING BACKGROUND CLASS ---
 class ScrollingBackground:
@@ -114,6 +117,7 @@ class Player(pygame.sprite.Sprite):
         self.vel_y = 0
         self.jumping = False
         self.lives = 10
+        self.gem_count = 0
 
     def move(self):
         keys = pygame.key.get_pressed()
@@ -164,6 +168,7 @@ class Meteor(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = fall_speed
         self.transformed = False
+        self.gem = False
 
     def update(self):
         self.rect.y += self.speed
@@ -173,6 +178,10 @@ class Meteor(pygame.sprite.Sprite):
     def transform_to_cheese(self):
         self.image = cheese_image
         self.transformed = True
+
+    def transform_to_gem(self):
+        self.image = gem_1_image
+        self.gem = True
 
     def reset(self):
         self.rect.bottom = 0
@@ -240,6 +249,9 @@ while run:
             if meteor.transformed:
                 player.lives = min(player.lives + 1, 10)
                 meteor.reset()
+            elif meteor.gem and player.lives == 10:
+                player.gem_count += 1
+                mateor.reset()
             else:
                 player.lives -= 2
                 meteor.reset()
@@ -262,3 +274,4 @@ while run:
     clock.tick(80)
 
 pygame.quit()
+print(player.gem_count)
