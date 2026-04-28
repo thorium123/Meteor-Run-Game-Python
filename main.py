@@ -49,10 +49,10 @@ ground_level = SCREEN_HEIGHT - player_height
 # --- LOAD IMAGES ---
 # Note: Background loading is moved to the Class below
 
-player_image_left = pygame.image.load(fr'{mydir}/Images/Player.Left.png') 
+player_image_left = pygame.image.load(fr'{mydir}/Images/Player-Left.png') 
 player_image_left = pygame.transform.scale(player_image_left, (player_width, player_height))
 
-player_image_right = pygame.image.load(fr'{mydir}/Images/Player.Right.png') 
+player_image_right = pygame.image.load(fr'{mydir}/Images/player-Right.png') 
 player_image_right = pygame.transform.scale(player_image_right, (player_width, player_height))
 
 player_image_default = pygame.image.load(fr'{mydir}/Images/Player.png') 
