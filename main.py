@@ -18,6 +18,8 @@ object_height = 50
 fall_speed = 5
 
 ### Load music
+
+# Find dir running in to locate files
 mydir = os.path.dirname(os.path.realpath(__file__))
 
 # Try/Except block in case music file is missing, prevents crash
@@ -42,9 +44,12 @@ pygame.display.set_caption("Meteor Run")
 player_width = 100
 player_height = 100
 player_speed = 5
-jump_height = 15
+jump_height = 30
 gravity = 1
 ground_level = SCREEN_HEIGHT - player_height
+
+gem_width = 100
+gem_height = 100
 
 # --- LOAD IMAGES ---
 # Note: Background loading is moved to the Class below
@@ -68,18 +73,16 @@ cheese_image = pygame.transform.scale(cheese_image, (object_width, object_height
 
 b_imgs = [pygame.image.load(fr'{mydir}/Images/Bullet-Red.png'), pygame.image.load(fr'{mydir}/Images/Bullet-Green.png')] 
 
-bullet_image = random.choice(b_imgs)
-bullet_image = pygame.transform.scale(bullet_image, (20, 30))
-
 gem_1_image = pygame.image.load(fr'{mydir}/Images/Gem-1.png')
-gem_1_image = pygame.transform.scale(gem_1_image, (object_width, object_height))
+gem_1_image = pygame.transform.scale(gem_1_image, (gem_width,gem_height))
 
 # --- NEW SCROLLING BACKGROUND CLASS ---
 class ScrollingBackground:
     def __init__(self, screen_width, screen_height, image_path, speed):
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self.speed = 2
+        self.speed = speed 
+        self.speed -= 3
         self.scroll = 0
 
         # Load and Scale Image
@@ -132,7 +135,7 @@ class Player(pygame.sprite.Sprite):
 
     def jump(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_w] or keys[pygame.K_UP]:
+        if (keys[pygame.K_w] or keys[pygame.K_UP]) and not self.jumping:  # Add: and not self.jumping
             self.jumping = True
             self.vel_y = -self.jump_speed
 
@@ -152,7 +155,8 @@ class Player(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = bullet_image
+        self.image = random.choice(b_imgs)
+        self.image = pygame.transform.scale(self.image, (20, 30))
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = 10
 
@@ -180,14 +184,18 @@ class Meteor(pygame.sprite.Sprite):
         self.transformed = True
 
     def transform_to_gem(self):
+        center = self.rect.center
         self.image = gem_1_image
+        self.rect = self.image.get_rect(center=center)
         self.gem = True
 
     def reset(self):
+        self.image = meteor_image
+        self.rect = self.image.get_rect()  # Rebuild rect as 50x50
         self.rect.bottom = 0
         self.rect.x = random.randint(0, SCREEN_WIDTH - object_width)
-        self.image = meteor_image
         self.transformed = False
+        self.gem = False
 
 # --- SETUP OBJECTS ---
 meteors = pygame.sprite.Group()
@@ -204,12 +212,22 @@ def lives_to_words(lives):
         10: "10 Lives", 9: "9 Lives", 8: "8 Lives", 7: "7 Lives", 6: "6 Lives",
         5: "5 Lives", 4: "4 Lives", 3: "3 Lives", 2: "2 Lives", 1: "1 Life", 0: "0 Lives"
     }
+    if player.lives <= 0:
+        player.lives = 0  # Clamp before drawing
+        run = False
     return words.get(lives, str(lives))
 
 def draw_lives_in_words(screen, lives):
     font = pygame.font.SysFont(None, 36)
     lives_text = font.render(f'Lives: {lives_to_words(lives)}', True, WHITE)
     screen.blit(lives_text, (10, 10))
+
+
+
+def draw_gem_count_in_words(screen, gem_count):
+    font = pygame.font.SysFont(None, 36)
+    gem_count_text = font.render(f"Gem Count: {gem_count}", True, WHITE)
+    screen.blit(gem_count_text, (200,10))
 
 # --- MAIN LOOP ---
 clock = pygame.time.Clock()
@@ -242,16 +260,19 @@ while run:
     collisions = pygame.sprite.groupcollide(bullets, meteors, True, False)
     for bullet, hit_meteors in collisions.items():
         for meteor in hit_meteors:
-            meteor.transform_to_cheese()
+            if player.lives == 10:
+                meteor.transform_to_gem()
+            else:
+                meteor.transform_to_cheese()
 
     for meteor in meteors:
         if pygame.sprite.collide_rect(player, meteor):
             if meteor.transformed:
                 player.lives = min(player.lives + 1, 10)
                 meteor.reset()
-            elif meteor.gem and player.lives == 10:
+            elif meteor.gem:
                 player.gem_count += 1
-                mateor.reset()
+                meteor.reset()
             else:
                 player.lives -= 2
                 meteor.reset()
@@ -268,10 +289,11 @@ while run:
     
     # Draw UI (Lives) LAST
     draw_lives_in_words(screen, player.lives)
+    draw_gem_count_in_words(screen,player.gem_count)
        
     # Flip display ONCE per frame
     pygame.display.flip()
     clock.tick(80)
 
 pygame.quit()
-print(player.gem_count)
+
