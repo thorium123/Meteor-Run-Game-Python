@@ -244,8 +244,9 @@ all_sprites.add(player)
 all_sprites.add(meteors)
 
 run = True
-mixer.music.pause()
+
 while run:
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -255,14 +256,15 @@ while run:
                 pause_game = not pause_game
             elif event.key ==  pygame.K_q:
                 run = False
-            elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
-                bullet = Bullet(player.rect.centerx, player.rect.top)
-                all_sprites.add(bullet)
-                bullets.add(bullet)
-
     if not pause_game:
-        mixer.music.unpause()
-        # 1. Logic Updates
+        # 1. Handle Events
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                    bullet = Bullet(player.rect.centerx, player.rect.top)
+                    all_sprites.add(bullet)
+                    bullets.add(bullet)
+        # 2. Logic Updates
         scrolling_bg.update()  # Update background position
         all_sprites.update()   # Update player/meteors
 
@@ -301,10 +303,9 @@ while run:
         draw_lives_in_words(screen, player.lives)
         draw_gem_count_in_words(screen,player.gem_count)
     elif pause_game:
-        mixer.music.pause()
         font = pygame.font.SysFont(None, 72)
         paused_text = font.render('PAUSED', True, (255,255,255))
-        screen.blit(paused_text, (SCREEN_WIDTH/2,SCREEN_HEIGHT/2))
+        screen.blit(paused_text, (300,250))
      # Flip display ONCE per frame
     pygame.display.flip()
     clock.tick(80)
