@@ -206,6 +206,7 @@ class paused(pygame.sprite.Sprite):
         paused_text = font.render('PAUSED', True, (255,255,255))
         self.image = paused_text
         self.rect = self.image.get_rect(center=(self.x, self.y))
+        mixer.music.pause()
         screen.blit(self.image, self.rect)
 
 # --- SETUP OBJECTS ---
@@ -308,10 +309,6 @@ while run:
         draw_lives_in_words(screen, player.lives)
         draw_gem_count_in_words(screen,player.gem_count)
     elif pause_game:
-        mixer.music.pause()
-#        font = pygame.font.SysFont(None, 72)
-#       paused_text = font.render('PAUSED', True, (255,255,255))
-#        screen.blit(paused_text, (SCREEN_WIDTH/2,SCREEN_HEIGHT/2))
         paused(SCREEN_WIDTH/2,SCREEN_HEIGHT/2) 
      # Flip display ONCE per frame
     pygame.display.flip()
