@@ -197,9 +197,16 @@ class Meteor(pygame.sprite.Sprite):
         self.transformed = False
         self.gem = False
 
-# Pausing
-def pause():
-    print:('Hello world')
+class paused(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.x = x 
+        self.y = y
+        font = pygame.font.SysFont(None, 72)
+        paused_text = font.render('PAUSED', True, (255,255,255))
+        self.image = paused_text
+        self.rect = self.image.get_rect(center=(self.x, self.y))
+        screen.blit(self.image, self.rect)
 
 # --- SETUP OBJECTS ---
 meteors = pygame.sprite.Group()
@@ -302,9 +309,10 @@ while run:
         draw_gem_count_in_words(screen,player.gem_count)
     elif pause_game:
         mixer.music.pause()
-        font = pygame.font.SysFont(None, 72)
-        paused_text = font.render('PAUSED', True, (255,255,255))
-        screen.blit(paused_text, (SCREEN_WIDTH/2,SCREEN_HEIGHT/2))
+#        font = pygame.font.SysFont(None, 72)
+#       paused_text = font.render('PAUSED', True, (255,255,255))
+#        screen.blit(paused_text, (SCREEN_WIDTH/2,SCREEN_HEIGHT/2))
+        paused(SCREEN_WIDTH/2,SCREEN_HEIGHT/2) 
      # Flip display ONCE per frame
     pygame.display.flip()
     clock.tick(80)
