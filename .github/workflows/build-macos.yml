@@ -17,8 +17,8 @@ jobs:
 
       - run: |
           pyinstaller --onefile --hidden-import pygame \
-            --add-data "Meteor-Run-Game-Python-0.0.1-alpha/Music:Music" \
-            --add-data "Meteor-Run-Game-Python-0.0.1-alpha/Images:Images" \
+            --add-data "Music:Music" \
+            --add-data "Images:Images" \
             main.py
 
       - uses: actions/upload-artifact@v4
