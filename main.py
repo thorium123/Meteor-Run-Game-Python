@@ -76,6 +76,15 @@ b_imgs = [pygame.image.load(fr'{mydir}/Images/Bullet-Red.png'), pygame.image.loa
 gem_1_image = pygame.image.load(fr'{mydir}/Images/Gem-1.png')
 gem_1_image = pygame.transform.scale(gem_1_image, (gem_width,gem_height))
 
+starting_screen_image = pygame.image.load(fr"{mydir}/Images/Starting-Screen-Image.svg")
+starting_screen_image = pygame.transform.scale(starting_screen_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+#you_win_image
+
+background_image = pygame.image.load(fr"{mydir}/Images/Background.png")
+background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT)) 
+
+
 # --- NEW SCROLLING BACKGROUND CLASS ---
 class ScrollingBackground:
     def __init__(self, screen_width, screen_height, image_path, speed):
@@ -241,6 +250,9 @@ def draw_gem_count_in_words(screen, gem_count):
     gem_count_text = font.render(f"Gem Count: {gem_count}", True, WHITE)
     screen.blit(gem_count_text, (200,10))
 
+def starting_screen():
+   starting_screen_image.draw(screen) 
+
 # --- MAIN LOOP ---
 clock = pygame.time.Clock()
 player = Player()
@@ -251,13 +263,11 @@ pause_game = False
 all_sprites.add(player)
 all_sprites.add(meteors)
 
+starting_screen = True
 run = True
 mixer.music.pause()
 while run:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 pause_game = not pause_game
@@ -267,52 +277,70 @@ while run:
                 bullet = Bullet(player.rect.centerx, player.rect.top)
                 all_sprites.add(bullet)
                 bullets.add(bullet)
+            elif event.key ==  pygame.K_q:
+                run = False             
+            elif event.key == pygame.K_RETURN and starting_screen == True:
+                    starting_screen = False 
 
-    if not pause_game:
-        mixer.music.unpause()
-        # 1. Logic Updates
-        scrolling_bg.update()  # Update background position
-        all_sprites.update()   # Update player/meteors
-
-        # Collisions
-        collisions = pygame.sprite.groupcollide(bullets, meteors, True, False)
-        for bullet, hit_meteors in collisions.items():
-            for meteor in hit_meteors:
-                if player.lives == 10:
-                    meteor.transform_to_gem()
-                else:
-                    meteor.transform_to_cheese()
-
-        for meteor in meteors:
-            if pygame.sprite.collide_rect(player, meteor):
-                if meteor.transformed:
-                    player.lives = min(player.lives + 1, 10)
-                    meteor.reset()
-                elif meteor.gem:
-                    player.gem_count += 1
-                    meteor.reset()
-                else:
-                    player.lives -= 2
-                    meteor.reset()
-
-        if player.lives <= 0:
+        if event.type == pygame.QUIT:
             run = False
+ 
+
+
+    if starting_screen:
+    #starting_screen()
+        screen.blit(background_image, (0,0))
+        screen.blit(starting_screen_image, (0,0))
+        pygame.display.flip()
+    else:
+
+        
+       
+        if not pause_game:
+            mixer.music.unpause()
+            # 1. Logic Updates
+            scrolling_bg.update()  # Update background position
+            all_sprites.update()   # Update player/meteors
+
+            # Collisions
+            collisions = pygame.sprite.groupcollide(bullets, meteors, True, False)
+            for bullet, hit_meteors in collisions.items():
+                for meteor in hit_meteors:
+                    if player.lives == 10:
+                        meteor.transform_to_gem()
+                    else:
+                        meteor.transform_to_cheese()
+    
+            for meteor in meteors:
+                if pygame.sprite.collide_rect(player, meteor):
+                    if meteor.transformed:
+                        player.lives = min(player.lives + 1, 10)
+                        meteor.reset()
+                    elif meteor.gem:
+                        player.gem_count += 1
+                        meteor.reset()
+                    else:
+                        player.lives -= 2
+                        meteor.reset()
+
+            if player.lives <= 0:
+                run = False
                 
-        # 3. Drawing
-        # Draw Background FIRST
-        scrolling_bg.draw(screen)
+            # 3. Drawing
+            # Draw Background FIRST
+            scrolling_bg.draw(screen)
+            
+            # Draw Sprites SECOND
+            all_sprites.draw(screen)
         
-        # Draw Sprites SECOND
-        all_sprites.draw(screen)
-        
-        # Draw UI (Lives) LAST
-        draw_lives_in_words(screen, player.lives)
-        draw_gem_count_in_words(screen,player.gem_count)
-    elif pause_game:
-        paused(SCREEN_WIDTH/2,SCREEN_HEIGHT/2) 
-     # Flip display ONCE per frame
-    pygame.display.flip()
-    clock.tick(80)
+            # Draw UI (Lives) LAST
+            draw_lives_in_words(screen, player.lives)
+            draw_gem_count_in_words(screen,player.gem_count)
+        elif pause_game:
+            paused(SCREEN_WIDTH/2,SCREEN_HEIGHT/2) 
+        # Flip display ONCE per frame
+        pygame.display.flip()
+        clock.tick(80)
 
 
 pygame.quit()
