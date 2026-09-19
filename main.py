@@ -3,6 +3,7 @@ import random
 from pygame import mixer
 import os 
 import math
+import time
 
 # Initialize Pygame
 pygame.init()
@@ -79,7 +80,8 @@ gem_1_image = pygame.transform.scale(gem_1_image, (gem_width,gem_height))
 starting_screen_image = pygame.image.load(fr"{mydir}/Images/Starting-Screen-Image.svg")
 starting_screen_image = pygame.transform.scale(starting_screen_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-#you_win_image
+you_win_image = pygame.image.load(fr"{mydir}/Images/You-Win-Image.svg")
+you_win_image = pygame.transform.scale(you_win_image,(SCREEN_WIDTH,SCREEN_HEIGHT))
 
 background_image = pygame.image.load(fr"{mydir}/Images/Background.png")
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT)) 
@@ -264,6 +266,8 @@ all_sprites.add(player)
 all_sprites.add(meteors)
 
 starting_screen = True
+you_win = False
+music = False
 run = True
 mixer.music.pause()
 while run:
@@ -292,15 +296,26 @@ while run:
         screen.blit(background_image, (0,0))
         screen.blit(starting_screen_image, (0,0))
         pygame.display.flip()
-    else:
+    elif you_win:
+        time.sleep(0.3)
+        screen.blit(background_image, (0,0))
+        screen.blit(you_win_image, (0,0))
+        pygame.display.flip()
+        if music:
+            mixer.music.pause()
+            time.sleep(0.3)
+            mixer.music.fadeout(2)
+            mixer.music.load(fr"{mydir}/Music/you-win.mp3")
+            mixer.music.play(loops=0)
 
-        
-       
+        music = False
+ 
+    else:
         if not pause_game:
             mixer.music.unpause()
             # 1. Logic Updates
-            scrolling_bg.update()  # Update background position
-            all_sprites.update()   # Update player/meteors
+            scrolling_bg.update()
+            all_sprites.update()
 
             # Collisions
             collisions = pygame.sprite.groupcollide(bullets, meteors, True, False)
@@ -310,7 +325,7 @@ while run:
                         meteor.transform_to_gem()
                     else:
                         meteor.transform_to_cheese()
-    
+
             for meteor in meteors:
                 if pygame.sprite.collide_rect(player, meteor):
                     if meteor.transformed:
@@ -325,23 +340,21 @@ while run:
 
             if player.lives <= 0:
                 run = False
-                
+
+            if player.gem_count >= 30:      # set to 30 for the real game
+                you_win = True
+                music = True
+
             # 3. Drawing
-            # Draw Background FIRST
             scrolling_bg.draw(screen)
-            
-            # Draw Sprites SECOND
             all_sprites.draw(screen)
-        
-            # Draw UI (Lives) LAST
             draw_lives_in_words(screen, player.lives)
-            draw_gem_count_in_words(screen,player.gem_count)
+            draw_gem_count_in_words(screen, player.gem_count)
         elif pause_game:
-            paused(SCREEN_WIDTH/2,SCREEN_HEIGHT/2) 
-        # Flip display ONCE per frame
+            paused(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+
         pygame.display.flip()
         clock.tick(80)
-
 
 pygame.quit()
 
