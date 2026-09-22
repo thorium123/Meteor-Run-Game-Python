@@ -13,7 +13,7 @@ mixer.init()
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-# Meteor Settings
+# Object Settings
 object_width = 50
 object_height = 50
 fall_speed = 5
@@ -49,9 +49,6 @@ jump_height = 30
 gravity = 1
 ground_level = SCREEN_HEIGHT - player_height
 
-gem_width = 100
-gem_height = 100
-
 # --- LOAD IMAGES ---
 # Note: Background loading is moved to the Class below
 
@@ -75,10 +72,10 @@ cheese_image = pygame.transform.scale(cheese_image, (object_width, object_height
 b_imgs = [pygame.image.load(fr'{mydir}/Images/Bullet-Red.png'), pygame.image.load(fr'{mydir}/Images/Bullet-Green.png')] 
 
 gem_1_image = pygame.image.load(fr'{mydir}/Images/Gem-1.png')
-gem_1_image = pygame.transform.scale(gem_1_image, (gem_width,gem_height))
+gem_1_image = pygame.transform.scale(gem_1_image, (object_width,object_height))
 
 gem_2_image = pygame.image.load(fr'{mydir}/Images/Gem-2.png')
-gem_2_image = pygame.transform.scale(gem_2_image, (gem_width,gem_height))
+gem_2_image = pygame.transform.scale(gem_2_image, (object_width,object_height))
 
 
 starting_screen_image = pygame.image.load(fr"{mydir}/Images/Starting-Screen-Image.png")
@@ -188,6 +185,7 @@ class Meteor(pygame.sprite.Sprite):
         self.speed = fall_speed
         self.transformed = False
         self.gem = False
+        self.special_gem = False
 
     def update(self):
         self.rect.y += self.speed
@@ -200,9 +198,12 @@ class Meteor(pygame.sprite.Sprite):
 
     def transform_to_gem(self):
         center = self.rect.center
-        self.image = choice([gem_1_image,gem_2_image],[0.5,0.5])
+        self.image = choice([gem_1_image,gem_2_image],[0.9,0.1])
         self.rect = self.image.get_rect(center=center)
-        self.gem = True
+        if self.image == gem_2_image:
+            self.special_gem = True
+        else: 
+            self.gem = True
 
     def reset(self):
         self.image = meteor_image
@@ -211,6 +212,7 @@ class Meteor(pygame.sprite.Sprite):
         self.rect.x = random.randint(0, SCREEN_WIDTH - object_width)
         self.transformed = False
         self.gem = False
+        self.special_gem = False
 
 class paused(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -236,7 +238,7 @@ scrolling_bg = ScrollingBackground(SCREEN_WIDTH, SCREEN_HEIGHT, fr"{mydir}/Image
 
 def lives_to_words(lives):
     words = {
-        10: "10 Lives", 9: "9 Lives", 8: "8 Lives", 7: "7 Lives", 6: "6 Lives",
+        12: "12 Lives", 11: "11 Lives", 10: "10 Lives", 9: "9 Lives", 8: "8 Lives", 7: "7 Lives", 6: "6 Lives",
         5: "5 Lives", 4: "4 Lives", 3: "3 Lives", 2: "2 Lives", 1: "1 Life", 0: "0 Lives"
     }
     if player.lives <= 0:
@@ -329,7 +331,7 @@ while run:
             collisions = pygame.sprite.groupcollide(bullets, meteors, True, False)
             for bullet, hit_meteors in collisions.items():
                 for meteor in hit_meteors:
-                    if player.lives == 10:
+                    if player.lives in (10, 12):
                         meteor.transform_to_gem()
                     else:
                         meteor.transform_to_cheese()
@@ -337,11 +339,18 @@ while run:
             for meteor in meteors:
                 if pygame.sprite.collide_rect(player, meteor):
                     if meteor.transformed:
-                        player.lives = min(player.lives + 1, 10)
-                        meteor.reset()
+                        if player.lives == 12:
+                            meteor.reset()
+                        else: 
+                            player.lives = min(player.lives + 1, 10)
+                            meteor.reset()
                     elif meteor.gem:
                         player.gem_count += 1
                         meteor.reset()
+                    elif meteor.special_gem:
+                        player.lives = min(player.lives + 2, 12)
+                        meteor.reset()
+
                     else:
                         player.lives -= 2
                         meteor.reset()
@@ -362,7 +371,7 @@ while run:
             paused(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
         pygame.display.flip()
-        clock.tick(80)
+        clock.tick(60)
 
 pygame.quit()
 
