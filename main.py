@@ -77,10 +77,14 @@ b_imgs = [pygame.image.load(fr'{mydir}/Images/Bullet-Red.png'), pygame.image.loa
 gem_1_image = pygame.image.load(fr'{mydir}/Images/Gem-1.png')
 gem_1_image = pygame.transform.scale(gem_1_image, (gem_width,gem_height))
 
-starting_screen_image = pygame.image.load(fr"{mydir}/Images/Starting-Screen-Image.svg")
+gem_2_image = pygame.image.load(fr'{mydir}/Images/Gem-2.png')
+gem_2_image = pygame.transform.scale(gem_2_image, (gem_width,gem_height))
+
+
+starting_screen_image = pygame.image.load(fr"{mydir}/Images/Starting-Screen-Image.png")
 starting_screen_image = pygame.transform.scale(starting_screen_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-you_win_image = pygame.image.load(fr"{mydir}/Images/You-Win-Image.svg")
+you_win_image = pygame.image.load(fr"{mydir}/Images/You-Win-Image.png")
 you_win_image = pygame.transform.scale(you_win_image,(SCREEN_WIDTH,SCREEN_HEIGHT))
 
 background_image = pygame.image.load(fr"{mydir}/Images/Background.png")
@@ -196,7 +200,7 @@ class Meteor(pygame.sprite.Sprite):
 
     def transform_to_gem(self):
         center = self.rect.center
-        self.image = gem_1_image
+        self.image = choice([gem_1_image,gem_2_image],[0.5,0.5])
         self.rect = self.image.get_rect(center=center)
         self.gem = True
 
@@ -254,6 +258,10 @@ def draw_gem_count_in_words(screen, gem_count):
 
 def starting_screen():
    starting_screen_image.draw(screen) 
+
+def choice(sample,weights):
+    chosen = random.choices(sample,weights=weights,k=1)
+    return chosen[0]
 
 # --- MAIN LOOP ---
 clock = pygame.time.Clock()
@@ -341,7 +349,7 @@ while run:
             if player.lives <= 0:
                 run = False
 
-            if player.gem_count >= 30:      # set to 30 for the real game
+            if player.gem_count >= 10:      # set to 30 for the real game
                 you_win = True
                 music = True
 
