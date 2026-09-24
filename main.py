@@ -84,6 +84,10 @@ starting_screen_image = pygame.transform.scale(starting_screen_image, (SCREEN_WI
 you_win_image = pygame.image.load(fr"{mydir}/Images/You-Win-Image.png")
 you_win_image = pygame.transform.scale(you_win_image,(SCREEN_WIDTH,SCREEN_HEIGHT))
 
+game_over_two_options = pygame.image.load(fr"{mydir}/Images/Game-Over-Two-Options.png")
+game_over_two_options = pygame.transform.scale(game_over_two_options,(SCREEN_WIDTH,SCREEN_HEIGHT))
+
+
 background_image = pygame.image.load(fr"{mydir}/Images/Background.png")
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT)) 
 
@@ -208,7 +212,7 @@ class Meteor(pygame.sprite.Sprite):
     def reset(self):
         self.image = meteor_image
         self.rect = self.image.get_rect()  # Rebuild rect as 50x50
-        self.rect.bottom = 0
+        self.rect.bottom = random.randint(-SCREEN_HEIGHT // 2,0)
         self.rect.x = random.randint(0, SCREEN_WIDTH - object_width)
         self.transformed = False
         self.gem = False
@@ -265,6 +269,18 @@ def choice(sample,weights):
     chosen = random.choices(sample,weights=weights,k=1)
     return chosen[0]
 
+def reset():
+    player.lives = 10
+    player.gem_count = 0
+    player.rect.center = (SCREEN_WIDTH // 2, ground_level)
+    pause_game = False
+    bullets.empty()
+    for meteor in meteors:
+        meteor.reset()
+    mixer.music.load(fr"{mydir}/Music/tune_1.mp3")
+    mixer.music.set_volume(0.03)
+    mixer.music.play(loops=-1)
+
 # --- MAIN LOOP ---
 clock = pygame.time.Clock()
 player = Player()
@@ -279,6 +295,7 @@ starting_screen = True
 you_win = False
 music = False
 run = True
+game = True
 mixer.music.pause()
 while run:
     for event in pygame.event.get():
@@ -295,6 +312,9 @@ while run:
                 run = False             
             elif event.key == pygame.K_RETURN and starting_screen == True:
                     starting_screen = False 
+            elif event.key == pygame.K_RETURN and game == False:
+                reset()
+                game = True
 
         if event.type == pygame.QUIT:
             run = False
@@ -319,8 +339,8 @@ while run:
             mixer.music.play(loops=0)
 
         music = False
- 
-    else:
+
+    elif game == True:
         if not pause_game:
             mixer.music.unpause()
             # 1. Logic Updates
@@ -356,7 +376,7 @@ while run:
                         meteor.reset()
 
             if player.lives <= 0:
-                run = False
+                game = False
 
             if player.gem_count >= 10:      # set to 30 for the real game
                 you_win = True
@@ -372,6 +392,13 @@ while run:
 
         pygame.display.flip()
         clock.tick(60)
+
+    elif game == False:
+        screen.blit(background_image, (0,0))
+        screen.blit(game_over_two_options, (0,0))
+        pygame.display.flip()
+        mixer.music.pause()
+
 
 pygame.quit()
 
