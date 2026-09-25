@@ -81,8 +81,8 @@ gem_2_image = pygame.transform.scale(gem_2_image, (object_width,object_height))
 starting_screen_image = pygame.image.load(fr"{mydir}/Images/Starting-Screen-Image.png")
 starting_screen_image = pygame.transform.scale(starting_screen_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-you_win_image = pygame.image.load(fr"{mydir}/Images/You-Win-Image.png")
-you_win_image = pygame.transform.scale(you_win_image,(SCREEN_WIDTH,SCREEN_HEIGHT))
+you_win_two_options = pygame.image.load(fr"{mydir}/Images/You-Win-Two-Options.png")
+you_win_two_options = pygame.transform.scale(you_win_two_options,(SCREEN_WIDTH,SCREEN_HEIGHT))
 
 game_over_two_options = pygame.image.load(fr"{mydir}/Images/Game-Over-Two-Options.png")
 game_over_two_options = pygame.transform.scale(game_over_two_options,(SCREEN_WIDTH,SCREEN_HEIGHT))
@@ -312,9 +312,10 @@ while run:
                 run = False             
             elif event.key == pygame.K_RETURN and starting_screen == True:
                     starting_screen = False 
-            elif event.key == pygame.K_RETURN and game == False:
+            elif event.key == pygame.K_RETURN and (game == False or you_win == True):
                 reset()
                 game = True
+                you_win = False
 
         if event.type == pygame.QUIT:
             run = False
@@ -329,7 +330,7 @@ while run:
     elif you_win:
         time.sleep(0.3)
         screen.blit(background_image, (0,0))
-        screen.blit(you_win_image, (0,0))
+        screen.blit(you_win_two_options, (0,0))
         pygame.display.flip()
         if music:
             mixer.music.pause()
