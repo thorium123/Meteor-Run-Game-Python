@@ -25,7 +25,7 @@ mydir = os.path.dirname(os.path.realpath(__file__))
 
 # Try/Except block in case music file is missing, prevents crash
 try:
-    mixer.music.load(fr'{mydir}/Music/tune_1.mp3')
+    mixer.music.load(fr'{mydir}/Music/tune_1.ogg')
     mixer.music.set_volume(0.03)
     mixer.music.play(loops=-1)
 except pygame.error:
@@ -277,7 +277,7 @@ def reset():
     bullets.empty()
     for meteor in meteors:
         meteor.reset()
-    mixer.music.load(fr"{mydir}/Music/tune_1.mp3")
+    mixer.music.load(fr"{mydir}/Music/tune_1.ogg")
     mixer.music.set_volume(0.03)
     mixer.music.play(loops=-1)
 
@@ -335,7 +335,7 @@ while run:
             mixer.music.pause()
             time.sleep(0.3)
             mixer.music.fadeout(2)
-            mixer.music.load(fr"{mydir}/Music/you-win.mp3")
+            mixer.music.load(fr"{mydir}/Music/you-win.ogg")
             mixer.music.play(loops=0)
 
         music = False
@@ -394,6 +394,7 @@ while run:
         clock.tick(60)
 
     elif game == False:
+        time.sleep(0.3)
         screen.blit(background_image, (0,0))
         screen.blit(game_over_two_options, (0,0))
         pygame.display.flip()
