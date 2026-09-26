@@ -230,10 +230,19 @@ function show_infobox() {
             margin: 0 auto;
 
             position: absolute;
-            top: 0;
+            /* keep the game below the page header; --header-h is set by the script after the header */
+            top: var(--header-h, 0px) !important; /* pygbag sets style.top = 0 on the canvas */
+            max-height: calc(100vh - var(--header-h, 0px));
+            object-fit: contain;
             bottom: 0;
             left: 0;
             right: 0;
+        }
+
+        header {
+            padding: 12px 20px;
+            line-height: 1.5;
+            text-align: center;
         }
 
         body {
@@ -291,7 +300,15 @@ function show_infobox() {
 <body>
 
     <header>Waring some game features may be distored, eg. speed. Warning this game with NOT work on a MOBILE DEVICE. Warning quitting the game will cause it to crash (pressing q in the game).</header>
-    
+    <script>
+        function set_header_height() {
+            const h = document.querySelector("header").offsetHeight
+            document.documentElement.style.setProperty("--header-h", h + "px")
+        }
+        set_header_height()
+        window.addEventListener("resize", set_header_height)
+    </script>
+
     <div id="transfer" align=center>
 <!--        <div class="spinner" id='spinner'></div> -->
         <div class="emscripten" id="status">Downloading...</div>
