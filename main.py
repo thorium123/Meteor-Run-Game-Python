@@ -9,6 +9,31 @@ import time
 pygame.init()
 mixer.init()
 
+# Score
+avg_lives = 1
+lives_list = [1,1]
+lost_bullet_count = 0
+hit_bullet_count = 0
+try:
+    high_score = int(open("high_score.txt").read())
+except FileNotFoundError:
+    f = open("high_score.txt", "x")
+    high_score = 0
+
+score = (hit_bullet_count - lost_bullet_count) * avg_lives
+
+if score >= int(high_score):
+    high_score = score
+    with open("high_score.txt", "w") as f:
+        f.write(str(score))
+
+
+
+
+open("high_score.txt").close()
+
+
+
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -179,6 +204,8 @@ class Bullet(pygame.sprite.Sprite):
     def update(self):
         self.rect.y -= self.speed
         if self.rect.bottom < 0:
+            global lost_bullet_count
+            lost_bullet_count += 1
             self.kill()
 
 class Meteor(pygame.sprite.Sprite):
@@ -262,6 +289,12 @@ def draw_gem_count_in_words(screen, gem_count):
     gem_count_text = font.render(f"Gem Count: {gem_count}", True, WHITE)
     screen.blit(gem_count_text, (200,10))
 
+def draw_scores_in_words(screen, score, high_score):
+    font = pygame.font.SysFont(None, 36)
+    scores_text = font.render(f"High Score: {high_score} Score: {score}", True, WHITE)
+    screen.blit(scores_text, ((SCREEN_WIDTH / 2), 0))
+
+
 def starting_screen():
    starting_screen_image.draw(screen) 
 
@@ -343,15 +376,24 @@ while run:
 
     elif game == True:
         if not pause_game:
+            score = 0
             mixer.music.unpause()
             # 1. Logic Updates
+            lives_list.append(player.lives)
             scrolling_bg.update()
             all_sprites.update()
 
             # Collisions
             collisions = pygame.sprite.groupcollide(bullets, meteors, True, False)
             for bullet, hit_meteors in collisions.items():
+                """
+                if hit_meteors.transform_to_gem in collisions.items() == True:
+                    hit_bullet_count += 1
+                elif hit_meteors.transform_to_gem in collisions.items() == False:
+                    hit_gem_count += 1
+                    """
                 for meteor in hit_meteors:
+                    hit_bullet_count += 1
                     if player.lives in (10, 12):
                         meteor.transform_to_gem()
                     else:
@@ -379,22 +421,35 @@ while run:
             if player.lives <= 0:
                 game = False
 
-            if player.gem_count >= 10:      # set to 30 for the real game
+            if player.gem_count >= 10:
                 you_win = True
                 music = True
 
             # 3. Drawing
+            avg_lives = sum(lives_list) / len(lives_list)
+            avg_lives = int(avg_lives)
+
+            score = (hit_bullet_count - lost_bullet_count) * avg_lives
+
+            if score >= int(high_score):
+                high_score = score
+                with open("high_score.txt", "w") as f:
+                    f.write(str(score))
+
             scrolling_bg.draw(screen)
             all_sprites.draw(screen)
             draw_lives_in_words(screen, player.lives)
             draw_gem_count_in_words(screen, player.gem_count)
+            draw_scores_in_words(screen, score, high_score)
         elif pause_game:
             paused(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
-        pygame.display.flip()
+        pygame.display.flip() 
         clock.tick(60)
 
     elif game == False:
+        player.image = player_image_default
+        pygame.display.flip()
         time.sleep(0.3)
         screen.blit(background_image, (0,0))
         screen.blit(game_over_two_options, (0,0))
@@ -403,4 +458,5 @@ while run:
 
 
 pygame.quit()
+
 
