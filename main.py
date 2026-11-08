@@ -1,7 +1,7 @@
 import pygame
 import random
 from pygame import mixer
-import os 
+import os
 import math
 import time
 
@@ -12,15 +12,23 @@ mixer.init()
 # Score
 avg_lives = 1
 lives_list = [1,1]
+lost_gem_count = 0
 lost_bullet_count = 0
 hit_bullet_count = 0
+
 try:
-    high_score = int(open("high_score.txt").read())
-except FileNotFoundError:
-    f = open("high_score.txt", "x")
+    try:
+        high_score = int(open("high_score.txt").read())
+    except FileNotFoundError:
+        f = open("high_score.txt", "x")
+        high_score = 0
+except ValueError:
+    f = open("high_score.txt", "w")
+    f.write("0")
     high_score = 0
 
-score = (hit_bullet_count - lost_bullet_count) * avg_lives
+
+score = 0
 
 if score >= int(high_score):
     high_score = score
@@ -217,10 +225,14 @@ class Meteor(pygame.sprite.Sprite):
         self.transformed = False
         self.gem = False
         self.special_gem = False
+        self.hit = False
 
     def update(self):
         self.rect.y += self.speed
         if self.rect.top > SCREEN_HEIGHT:
+            if self.gem == True:
+                global lost_bullet_count
+                lost_bullet_count += 1
             self.reset()
 
     def transform_to_cheese(self):
@@ -338,9 +350,10 @@ while run:
             elif event.key ==  pygame.K_q:
                 run = False
             elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
-                bullet = Bullet(player.rect.centerx, player.rect.top)
-                all_sprites.add(bullet)
-                bullets.add(bullet)
+                if not pause_game:
+                    bullet = Bullet(player.rect.centerx, player.rect.top)
+                    all_sprites.add(bullet)
+                    bullets.add(bullet)
             elif event.key ==  pygame.K_q:
                 run = False             
             elif event.key == pygame.K_RETURN and starting_screen == True:
@@ -393,7 +406,9 @@ while run:
                     hit_gem_count += 1
                     """
                 for meteor in hit_meteors:
-                    hit_bullet_count += 1
+                    if meteor.hit == False:
+                        hit_bullet_count += 1
+                    meteor.hit = True
                     if player.lives in (10, 12):
                         meteor.transform_to_gem()
                     else:
@@ -429,7 +444,7 @@ while run:
             avg_lives = sum(lives_list) / len(lives_list)
             avg_lives = int(avg_lives)
 
-            score = (hit_bullet_count - lost_bullet_count) * avg_lives
+            score = ((hit_bullet_count - lost_bullet_count) * avg_lives) - lost_gem_count
 
             if score >= int(high_score):
                 high_score = score
@@ -458,5 +473,5 @@ while run:
 
 
 pygame.quit()
-
+open("high_score.txt", "r").close()
 
