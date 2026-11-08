@@ -172,6 +172,9 @@ class Player(pygame.sprite.Sprite):
         self.gem_count = 0
 
     def move(self):
+
+        self.rect.x = pygame.mouse.get_pos()[0]
+        """
         keys = pygame.key.get_pressed()
         if (keys[pygame.K_a] or keys[pygame.K_LEFT]) and self.rect.left > 0:
             self.rect.x -= self.speed
@@ -181,6 +184,7 @@ class Player(pygame.sprite.Sprite):
             self.image = player_image_right 
         else:
             self.image = player_image_default 
+        """
 
     def jump(self):
         keys = pygame.key.get_pressed()
@@ -256,6 +260,7 @@ class Meteor(pygame.sprite.Sprite):
         self.transformed = False
         self.gem = False
         self.special_gem = False
+        self.hit = False
 
 class paused(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -304,7 +309,7 @@ def draw_gem_count_in_words(screen, gem_count):
 def draw_scores_in_words(screen, score, high_score):
     font = pygame.font.SysFont(None, 36)
     scores_text = font.render(f"High Score: {high_score} Score: {score}", True, WHITE)
-    screen.blit(scores_text, ((SCREEN_WIDTH / 2), 0))
+    screen.blit(scores_text, ((SCREEN_WIDTH / 2), 10))
 
 
 def starting_screen():
@@ -344,18 +349,35 @@ game = True
 mixer.music.pause()
 while run:
     for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if pygame.mouse.get_visible():
+                pygame.mouse.set_visible(False)
+            elif not pygame.mouse.get_visible():
+                if not pause_game:
+                    bullet = Bullet(player.rect.centerx, player.rect.top)
+                    all_sprites.add(bullet)
+                    bullets.add(bullet)
+
+
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 pause_game = not pause_game
-            elif event.key ==  pygame.K_q:
+            elif event.key == pygame.K_q:
                 run = False
             elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
                 if not pause_game:
                     bullet = Bullet(player.rect.centerx, player.rect.top)
                     all_sprites.add(bullet)
                     bullets.add(bullet)
-            elif event.key ==  pygame.K_q:
-                run = False             
+            elif event.key ==  pygame.K_r:
+                time.sleep(0.3)
+                reset()
+                mixer.music.pause()
+                pause_game = False
+                starting_screen = True
+                game = True
+                you_win = False
             elif event.key == pygame.K_RETURN and starting_screen == True:
                     starting_screen = False 
             elif event.key == pygame.K_RETURN and (game == False or you_win == True):
@@ -375,6 +397,11 @@ while run:
         pygame.display.flip()
     elif you_win:
         time.sleep(0.3)
+        avg_lives = 1
+        lives_list = [1,1]
+        lost_gem_count = 0
+        lost_bullet_count = 0
+        hit_bullet_count = 0
         screen.blit(background_image, (0,0))
         screen.blit(you_win_two_options, (0,0))
         pygame.display.flip()
@@ -389,7 +416,6 @@ while run:
 
     elif game == True:
         if not pause_game:
-            score = 0
             mixer.music.unpause()
             # 1. Logic Updates
             lives_list.append(player.lives)
@@ -441,10 +467,8 @@ while run:
                 music = True
 
             # 3. Drawing
-            avg_lives = sum(lives_list) / len(lives_list)
-            avg_lives = int(avg_lives)
-
-            score = ((hit_bullet_count - lost_bullet_count) * avg_lives) - lost_gem_count
+            avg_lives = round(sum(lives_list) / len(lives_list))
+            score = ((hit_bullet_count) * avg_lives) - lost_gem_count
 
             if score >= int(high_score):
                 high_score = score
@@ -463,6 +487,12 @@ while run:
         clock.tick(60)
 
     elif game == False:
+        avg_lives = 1
+        lives_list = [1,1]
+        lost_gem_count = 0
+        lost_bullet_count = 0
+        hit_bullet_count = 0
+        score = 0
         player.image = player_image_default
         pygame.display.flip()
         time.sleep(0.3)
