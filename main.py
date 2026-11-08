@@ -4,6 +4,7 @@ from pygame import mixer
 import os
 import math
 import time
+import argparse
 
 # Initialize Pygame
 pygame.init()
@@ -40,7 +41,15 @@ if score >= int(high_score):
 
 open("high_score.txt").close()
 
+# Keyboard/Mouse
+parser = argparse.ArgumentParser(description="Meteor Run")
+parser.add_argument("-m", "--mouse", action="store_true", help="use mouse instead of keyboard")
+args = parser.parse_args()
 
+if args.mouse:
+    mouse = True
+elif not args.mouse:
+    mouse = False
 
 # Colors
 BLACK = (0, 0, 0)
@@ -172,19 +181,26 @@ class Player(pygame.sprite.Sprite):
         self.gem_count = 0
 
     def move(self):
-
-        self.rect.x = pygame.mouse.get_pos()[0]
-        """
-        keys = pygame.key.get_pressed()
-        if (keys[pygame.K_a] or keys[pygame.K_LEFT]) and self.rect.left > 0:
-            self.rect.x -= self.speed
-            self.image = player_image_left 
-        elif (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and self.rect.right < SCREEN_WIDTH:
-            self.rect.x += self.speed
-            self.image = player_image_right 
-        else:
-            self.image = player_image_default 
-        """
+        if not mouse:    
+            keys = pygame.key.get_pressed()
+            if (keys[pygame.K_a] or keys[pygame.K_LEFT]) and self.rect.left > 0:
+                self.rect.x -= self.speed
+                self.image = player_image_left 
+            elif (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and self.rect.right < SCREEN_WIDTH:
+                self.rect.x += self.speed
+                self.image = player_image_right 
+            else:
+                self.image = player_image_default 
+        elif mouse:
+            mouse_x = pygame.mouse.get_pos()[0]
+            if mouse_x < self.rect.centerx - self.speed and self.rect.left > 0:
+                self.rect.x -= self.speed
+                self.image = player_image_left
+            elif mouse_x > self.rect.centerx + self.speed and self.rect.right < SCREEN_WIDTH:
+                self.rect.x += self.speed
+                self.image = player_image_right
+            else:
+                self.image = player_image_default
 
     def jump(self):
         keys = pygame.key.get_pressed()
@@ -352,7 +368,7 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_visible():
                 pygame.mouse.set_visible(False)
-            elif not pygame.mouse.get_visible():
+            elif (not pygame.mouse.get_visible()) and mouse == True:
                 if not pause_game:
                     bullet = Bullet(player.rect.centerx, player.rect.top)
                     all_sprites.add(bullet)
@@ -466,7 +482,6 @@ while run:
                 you_win = True
                 music = True
 
-            # 3. Drawing
             avg_lives = round(sum(lives_list) / len(lives_list))
             score = ((hit_bullet_count) * avg_lives) - lost_gem_count
 
@@ -474,6 +489,8 @@ while run:
                 high_score = score
                 with open("high_score.txt", "w") as f:
                     f.write(str(score))
+            # 3. Drawing
+
 
             scrolling_bg.draw(screen)
             all_sprites.draw(screen)
